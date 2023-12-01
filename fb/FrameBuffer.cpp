@@ -7,7 +7,7 @@
 #include <string.h>
 
 FrameBuffer::FrameBuffer(const char* path)
-: m_fbDev(path), 
+: m_fbDev(path),
   m_memBlock(init()),
   m_backBuff(m_memBlock.size()),
   m_directWrite(false)
@@ -39,36 +39,36 @@ void FrameBuffer::putPixel(size_t x, size_t y, Color color)
 	}
 
 }
-	
-void FrameBuffer::line(Point start, Point end, Color color) 
+
+void FrameBuffer::line(Point start, Point end, Color color)
 {
 	BresenhamLine(start, end, color);
 }
 
-void FrameBuffer::BresenhamLine(Point start, Point end, Color color) 
+void FrameBuffer::BresenhamLine(Point start, Point end, Color color)
 {
 	int dx = abs(end.x - start.x);
 	int dy = abs(end.y - start.y);
-	
+
 	Point curPoint = start;
 
 	int sx = (start.x < end.x) ? 1 : -1;
 	int sy = (start.y < end.y) ? 1 : -1;
 	int err = dx - dy;
-	
+
 	while (true) {
 	    putPixel(curPoint, color);
-	    
+
 	    if (curPoint.x == end.x && curPoint.y == end.y)
 		break;
-	    
+
 	    int err2 = 2 * err;
-	    
+
 	    if (err2 > -dy) {
 		err -= dy;
 		curPoint.x += sx;
 	    }
-	    
+
 	    if (err2 < dx) {
 		err += dx;
 		curPoint.y += sy;
@@ -76,14 +76,14 @@ void FrameBuffer::BresenhamLine(Point start, Point end, Color color)
 	}
 }
 
-void FrameBuffer::swap() 
+void FrameBuffer::swap()
 {
 	//assert(m_backBuff.size() == m_memBlock.size());
 
 	if (m_directWrite)
 		return;
 
-	memcpy(m_memBlock.data(), m_backBuff.data(), m_memBlock.size()); 
+	memcpy(m_memBlock.data(), m_backBuff.data(), m_memBlock.size());
 }
 
 void FrameBuffer::clear(char pattern)
@@ -92,23 +92,23 @@ void FrameBuffer::clear(char pattern)
 	memset(buff, pattern, m_memBlock.size());
 }
 
-void FrameBuffer::enableDirectWrite(bool enable) 
-{ 
-	m_directWrite = enable; 
+void FrameBuffer::enableDirectWrite(bool enable)
+{
+	m_directWrite = enable;
 }
 
-char* FrameBuffer::buffer() 
-{ 
-	return (m_directWrite) ? m_memBlock.data() : m_backBuff.data(); 
-} 
-
-const char* FrameBuffer::buffer() const 
+char* FrameBuffer::buffer()
 {
-	return (m_directWrite) ? m_memBlock.data() : m_backBuff.data(); 
-} 
+	return (m_directWrite) ? m_memBlock.data() : m_backBuff.data();
+}
+
+const char* FrameBuffer::buffer() const
+{
+	return (m_directWrite) ? m_memBlock.data() : m_backBuff.data();
+}
 
 
-MemBlock FrameBuffer::init() 
+MemBlock FrameBuffer::init()
 {
 	int result;
 	struct fb_fix_screeninfo finfo;

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.24 FATAL_ERROR)
 
 project(rapiplay)
 set(CMAKE_CXX_STANDARD 20)
@@ -11,40 +11,7 @@ option(ENABLE_TESTING "Enable testing" TRUE)
 
 include("${CMAKE_SOURCE_DIR}/cmake/CompileOptions.cmake")
 
-find_package(StbImage)
+find_package(StbImage REQUIRED)
 
-set(HEADERS
-	Error.h
-	Point.h
-	Color.h
-	MemBlock.h
-	FileDescriptor.h
-	FrameBuffer.h
-	StbTexture.h
-	Utils.h
-	flying_line_demo.h
-)
-
-set(SOURCES
-	MemBlock.cpp
-	FileDescriptor.cpp
-	FrameBuffer.cpp
-	StbTexture.cpp
-	flying_line_demo.cpp
-	StbiImpl.cpp
-	Utils.cpp
-	StbiResizeImpl.cpp
-	StbiImageWriteImpl.cpp
-)
-
-add_library(rapi ${HEADERS} ${SOURCES})
-target_include_directories(rapi PUBLIC ${STB_IMAGE_INCLUDE_DIR})
-
-add_executable(rapishow rapishow.cpp)
-target_link_libraries(rapishow PRIVATE rapi)
-
-add_executable(rapiplay rapiplay.cpp)
-target_link_libraries(rapiplay PRIVATE rapi)
-
-add_executable(rapiresize rapiresize.cpp)
-target_link_libraries(rapiresize PRIVATE rapi)
+add_subdirectory(fb)
+add_subdirectory(tools)

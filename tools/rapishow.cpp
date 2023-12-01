@@ -1,6 +1,6 @@
-#include "FrameBuffer.h"
-#include "StbTexture.h"
-#include "Utils.h"
+#include "fb/FrameBuffer.h"
+#include "fb/StbTexture.h"
+#include "fb/Utils.h"
 
 #include <iostream>
 #include <exception>
@@ -29,11 +29,11 @@ int main(int argc, const char* argv[]) try
 	std::filesystem::path imagePath(argv[1]);
 
 	showImage(fb, imagePath);
-		
+
 	fb.swap();
 
 	return 0;
-} 
+}
 catch(const std::exception& e)
 {
 	std::cerr << e.what() << std::endl;

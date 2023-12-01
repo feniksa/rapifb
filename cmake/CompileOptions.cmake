@@ -7,8 +7,11 @@ add_compile_options($<$<COMPILE_LANG_AND_ID:CXX,GNU>:-Woverloaded-virtual>)
 add_compile_options($<$<COMPILE_LANG_AND_ID:CXX,GNU>:-Wuninitialized>)
 add_compile_options($<$<COMPILE_LANG_AND_ID:CXX,GNU>:-Wmissing-declarations>)
 add_compile_options($<$<COMPILE_LANG_AND_ID:CXX,GNU>:-Wstrict-aliasing>)
-# enable hardware math for float's
-add_compile_options($<$<COMPILE_LANG_AND_ID:CXX,GNU>:-mfloat-abi=hard>)
+
+if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "arm")
+	# enable hardware math for float's on arms
+	add_compile_options($<$<COMPILE_LANG_AND_ID:CXX,GNU>:-mfloat-abi=hard>)
+endif()
 
 if (FORCE_COLORED_OUTPUT)
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")

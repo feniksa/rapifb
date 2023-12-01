@@ -1,6 +1,6 @@
-#include "FrameBuffer.h"
-#include "StbTexture.h"
-#include "Utils.h"
+#include "fb/FrameBuffer.h"
+#include "fb/StbTexture.h"
+#include "fb/Utils.h"
 
 #include <iostream>
 #include <exception>
@@ -46,7 +46,7 @@ int main(int argc, const char* argv[]) try
 	}
 
 	//fb.clear();
-	
+
 	std::cout << "load plyalist\n";
 	std::vector<std::string> playlist = readPlaylist(argv[1]);
 
@@ -56,7 +56,7 @@ int main(int argc, const char* argv[]) try
 
 	std::cout << "start show images\n";
 	size_t frame = 0;
-	while(true) {	
+	while(true) {
 		std::ranges::for_each(playlist, [&](const auto& path) {
 			std::cout << "show frame " << frame << "\n";
 
@@ -69,7 +69,7 @@ int main(int argc, const char* argv[]) try
 
 
 	return 0;
-} 
+}
 catch(const std::exception& e)
 {
 	std::cerr << e.what() << std::endl;

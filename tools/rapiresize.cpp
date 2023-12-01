@@ -1,6 +1,6 @@
-#include "FrameBuffer.h"
-#include "StbTexture.h"
-#include "Utils.h"
+#include "fb/FrameBuffer.h"
+#include "fb/StbTexture.h"
+#include "fb/Utils.h"
 
 #include <iostream>
 #include <exception>
@@ -22,16 +22,16 @@ int main(int argc, const char* argv[]) try
 	}
 
 	//fb.clear();
-	
+
 	std::filesystem::path outDir(argv[2]);
 	if (!std::filesystem::is_directory(outDir)) {
 		std::cerr << "output directory doesn't exist" << "\n";
 		return -1;
 	}
-	
+
 	std::cout << "start load images\n";
 	std::ranges::for_each(
-		std::filesystem::directory_iterator{argv[1]}, 
+		std::filesystem::directory_iterator{argv[1]},
 		[&](const auto& dir_entry) {
 			const auto imagePath = dir_entry.path();
 
@@ -55,7 +55,7 @@ int main(int argc, const char* argv[]) try
 
 			StbTexture resizedImage = image.resize(fb.width(), fb.height());
 			std::cout << imagePath << " resized\n";
-		
+
 			std::filesystem::path outFileName = outDir / imagePath.filename();
 			outFileName += std::filesystem::path(".bmp");
 
@@ -68,7 +68,7 @@ int main(int argc, const char* argv[]) try
 	std::cout << "finished\n";
 
 	return 0;
-} 
+}
 catch(const std::exception& e)
 {
 	std::cerr << e.what() << std::endl;
