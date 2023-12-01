@@ -37,7 +37,23 @@ All tools are developed with a focus on minimal resource consumption, ensuring e
 3. Command-Line Interface (CLI) Support:
 Each tool comes equipped with a command-line interface, offering flexibility and scriptability for users who prefer to integrate these tools into their workflows or use them in automated processes.
 
-# rapiplay
+# Project build
 
+## Dependencies
+* cmake
+* gcc
+* boost
+* [stbimage](https://github.com/nothings/stb)
 
+## Build project for release
+1. Create build directory ```mkdir build```
+2. cd into buid directory ```cd build```
+3. Configure project in release mode ```cmake .. -DCMAKE_BUILD_TYPE=release -DCMAKE_INSTALL_PREFIX=/usr/local```
+4. Build project ```make```
+5. Install builded utils ```make install```. Installed tools will be in ```/usr/loca/bin``` directory by default
 
+## To build project for debug
+1. Create build directory ```mkdir build```
+2. cd into buid directory ```cd build```
+3. configure project ```cmake -G Ninja -DCMAKE_BUILD_TYPE=debug -DFORCE_COLORED_OUTPUT=true -DCMAKE_EXPORT_COMPILE_COMMANDS=1 ..```
+4. compile project ```ninja```
