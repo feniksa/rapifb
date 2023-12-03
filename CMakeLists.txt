@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.24 FATAL_ERROR)
 
 project(rapiplay VERSION 1.0.0 
-	DESCRIPTION "Linux framebuffer frame show tools" 
+	DESCRIPTION "Linux framebuffer tools" 
 	HOMEPAGE_URL "https://github.com/feniksa/rapifb"
 	LANGUAGES CXX)
 
