@@ -31,8 +31,8 @@ int main(int argc, const char* argv[]) try
 	boost::program_options::options_description genericOptions("generic");
     genericOptions.add_options()
                         ("help", "produce help message")
-                        ("inputDir,i", boost::program_options::value<std::string>(&inputResource), "input directory for images (frames) to be resized")
-                        ("outputDir,o", boost::program_options::value<std::string>(&outputResource), "output directory for resized images")
+                        ("inputDir,i", boost::program_options::value<std::string>(&inputResource)->required(), "input directory for images (frames) to be resized")
+                        ("outputDir,o", boost::program_options::value<std::string>(&outputResource)->required(), "output directory for resized images")
                         ("framebuffer,f", boost::program_options::value<std::string>(&frameBufferPath)->default_value("/dev/fb0"), "framebuffer device to get dimensions")
                         ("width,w", boost::program_options::value<int>(), "override destination image width")
                         ("height,h", boost::program_options::value<int>(), "override destination image height")
@@ -44,12 +44,12 @@ int main(int argc, const char* argv[]) try
 
 	boost::program_options::variables_map vm;
     boost::program_options::store(boost::program_options::parse_command_line(argc, argv, cmdline_options), vm);
-    boost::program_options::notify(vm);
 
     if (vm.contains("help")) {
             std::cout << cmdline_options << "\n";
             return 0;
     }
+    boost::program_options::notify(vm);
 
     // set log verbosity
     if (vm.contains("verbosity")) {

@@ -1,0 +1,44 @@
+.\" Manpage for rapiresize.
+.\" Contact feniksa@200volts.com to correct errors or typos.
+.TH man 8 "03 Dec 2023" "1.0" "rapiresize man page"
+.SH NAME
+rapiresize \- resize image for linux framebuffer dimensions
+.SH SYNOPSIS
+.B rapiresize
+\fI\--inputDir\fB\ /path/to/framesdir\fI\ --outputDir\fB\ /path/to/outputdir
+.SH DESCRIPTION
+.TP
+rapiresize resize image to linux framebuffer size
+.SH OPTIONS
+.TP
+.B "-h, --help"
+show help message
+.TP
+.BI "-i, --inputDir"\ /path/to/framesdir
+Path to original frames to be resized. Supported image formats: png, jpeg, bmp
+.TP
+.BI "-o, --outputDir"\ /path/to/outdir
+Path to directory, where resized frames should be stored. Directory must exists
+.TP
+.BI "-f, --framebuffer"\ /dev/fb0
+framebuffer device to get dimensions
+.TP
+.BI "-w, --width"\ NUMBER
+override image width (ignore framebuffer width)
+.TP
+.BI "-h, --height"\ NUMBER
+override image height (ignore framebuffer height)
+.TP
+.BI "-c, --channels"\ [3|4]
+number of color channels in image. Supported values are: 3 and 4. 
+Default value is 3
+.TP
+.BI "-v, --verbosity"\ info
+program verbosity. Values are: info, warning, debug, trace. Default value is: info
+
+.SH SEE ALSO
+rapiresize(8), rapishow(8)
+.SH BUGS
+Image channel convertion works unstable
+.SH AUTHOR
+Maksym Sditanov (feniksa@200volts.com)

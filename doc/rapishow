@@ -1,0 +1,33 @@
+.\" Manpage for rapishow.
+.\" Contact feniksa@200volts.com to correct errors or typos.
+.TH man 8 "03 Dec 2023" "1.0" "rapishow man page"
+.SH NAME
+rapishow \- display image on linux framebuffer
+.SH SYNOPSIS
+.TP
+.BI "rapishow\ -\-input-file"\ path_to_image.png
+.SH DESCRIPTION
+rapishow displays the specified file on the linux console using the framebuffer device
+.SH OPTIONS
+.TP
+.B "-h, --help"
+show help message
+.TP
+.BI "-d, --directwrite"\ [0|1]
+use direct write to framebuffer memory. By default is: 0
+.TP
+.BI "-i, --input-file"\ path
+image file to show
+.TP
+.BI "-f, --framebuffer"\ /dev/fb0
+use direct write to framebuffer memory
+.TP
+.BI "-v, --verbosity"\ info
+program verbosity. Values are: info, warning, debug, trace. Default value is: info
+
+.SH SEE ALSO
+rapiresize(8), rapiplay(8)
+.SH BUGS
+No known bugs.
+.SH AUTHOR
+Maksym Sditanov (feniksa@200volts.com)

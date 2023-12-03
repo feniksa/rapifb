@@ -33,12 +33,13 @@ int main(int argc, const char* argv[]) try
 
 	boost::program_options::variables_map vm;
     boost::program_options::store(boost::program_options::parse_command_line(argc, argv, cmdline_options), vm);
-    boost::program_options::notify(vm);
 
     if (vm.contains("help")) {
             std::cout << cmdline_options << "\n";
             return 0;
     }
+
+    boost::program_options::notify(vm);
 
     // set log verbosity
     if (vm.contains("verbosity")) {
