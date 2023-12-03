@@ -6,14 +6,15 @@ The rapifb project is a comprehensive set of tools designed to facilitate image 
 The image viewer tool `rapishow` allows users to seamlessly view images directly within the Linux framebuffer. With support for various image formats, users can easily navigate through their image library without the need for a full desktop environment. The tool offers a lightweight and user-friendly interface for efficient image browsing.
 
 Exapmle of usage:
-```rapishow /home/feniks/rapiplay someimage.jpg```
+```rapishow -i someimage.jpg```
 
 2. Image Resizer for Linux Framebuffer:
 The image resizing tool `rapiresize` is a powerful utility that enables users to resize images directly for the the Linux framebuffer environment. This functionality is especially useful for optimizing images for specific framebuffer display resolutions, ensuring compatibility and optimal visual presentation. Users can customize resizing parameters to suit their preferences.
 
 Exapmle of usage:
-```rapiresize someimage.jpg```
+```rapiresize -i /tmp/original_frames -o /tmp/resized_frames```
 
+> Supports only bmp output format now
 
 3. Frame Player for Linux Framebuffer:
 The frame player tool `rapiplay` is designed for playing sequences of frames in the Linux framebuffer. This feature is particularly beneficial for creating simple animations or viewing image sequences in a slideshow format.
@@ -22,7 +23,7 @@ Exapmle of usage:
 1. Generate playlist for sequence of images
 ```ls -v1 *.bmp | xarg readlink -f > playlist.txt```
 2. Run rapiplay
-```rapiplay /home/feniks/playlist.txt```
+```rapiplay -p /home/feniks/playlist.txt```
 
 > For small or battery powered devices, please, use .bmp mage format (.bmp format doesn't requried image decomparession)
 

@@ -31,11 +31,11 @@ int main(int argc, const char* argv[]) try
 	boost::program_options::options_description genericOptions("generic");
     genericOptions.add_options()
                         ("help", "produce help message")
-                        ("inputDir,i", boost::program_options::value<std::string>(&inputResource)->required(), "input directory for images (frames) to be resized")
-                        ("outputDir,o", boost::program_options::value<std::string>(&outputResource)->required(), "output directory for resized images")
-                        ("framebuffer,f", boost::program_options::value<std::string>(&frameBufferPath)->default_value("/dev/fb0"), "framebuffer device to get dimensions for")
+                        ("inputDir,i", boost::program_options::value<std::string>(&inputResource), "input directory for images (frames) to be resized")
+                        ("outputDir,o", boost::program_options::value<std::string>(&outputResource), "output directory for resized images")
+                        ("framebuffer,f", boost::program_options::value<std::string>(&frameBufferPath)->default_value("/dev/fb0"), "framebuffer device to get dimensions")
                         ("width,w", boost::program_options::value<int>(), "override destination image width")
-                        ("height,h", boost::program_options::value<int>(), "override destination image width")
+                        ("height,h", boost::program_options::value<int>(), "override destination image height")
                         ("channels,c", boost::program_options::value<int>(&outputImageChannels)->default_value(3), "image channels (3 or 4 channels supported)")
                         ("verbosity,v", boost::program_options::value<std::string>(), "verbosity");
 
@@ -64,13 +64,16 @@ int main(int argc, const char* argv[]) try
             boost::log::core::get()->set_filter(boost::log::trivial::severity >= boost::log::trivial::info);
     }
 
-
-	std::filesystem::path outDir(outputResource);
-	if (!std::filesystem::is_directory(outDir)) {
-		std::cerr << "output directory " << outDir<< " doesn't exist" << "\n";
+	if (!std::filesystem::is_directory(inputResource)) {
+		std::cerr << "input directory " << inputResource	<< " doesn't exist" << "\n";
 		return -1;
 	}
 
+	std::filesystem::path outDir(outputResource);
+	if (!std::filesystem::is_directory(outputResource)) {
+		std::cerr << "output directory " << outDir	<< " doesn't exist" << "\n";
+		return -1;
+	}
 
 	BOOST_LOG_TRIVIAL(debug) << "try to open output framebuffer " << frameBufferPath;
 	FrameBuffer fb(frameBufferPath.c_str());
@@ -88,7 +91,6 @@ int main(int argc, const char* argv[]) try
 		BOOST_LOG_TRIVIAL(debug) << "override image height " <<  outputImageHeight;
 	}
 
-	//outputImageChannels = vm["channels"].as<int>();
 	BOOST_LOG_TRIVIAL(debug) << "image channels " <<  outputImageChannels;
 
 	if (outputImageWidth <= 0) {
