@@ -8,7 +8,8 @@
 #include <ranges>
 #include <algorithm>
 #include <fstream>
-#include <set>
+#include <chrono>
+#include <thread>
 
 #include <boost/log/trivial.hpp>
 #include <boost/log/core.hpp>
@@ -18,6 +19,10 @@
 
 #include <boost/program_options.hpp>
 #include <boost/program_options/parsers.hpp>
+
+using namespace std::chrono_literals;
+
+constexpr std::chrono::nanoseconds timestep(16ms);
 
 namespace
 {
@@ -46,9 +51,12 @@ std::vector<std::string> readPlaylist(const std::string& playlistPath)
 
 int main(int argc, const char* argv[]) try
 {
+	using clock = std::chrono::high_resolution_clock;
+
 	bool frameBufferDirectWrite;
 	std::string playlistFile;
 	std::string frameBufferPath;
+	unsigned int delay;
 
 	boost::program_options::options_description genericOptions("generic");
 	genericOptions.add_options()
@@ -56,6 +64,7 @@ int main(int argc, const char* argv[]) try
 		("directwrite,d", boost::program_options::value<bool>(&frameBufferDirectWrite)->default_value(false), "use direct write to framebuffer")
 		("playlist,p", boost::program_options::value<std::string>(&playlistFile)->required(), "playlist file")
 		("framebuffer,f", boost::program_options::value<std::string>(&frameBufferPath)->default_value("/dev/fb0"), "framebuffer device")
+		("delay", boost::program_options::value<unsigned int>(&delay)->default_value(0), "how long to sleep beetwin frames")
 		("verbosity,v", boost::program_options::value<std::string>(), "verbosity");
 
 	boost::program_options::options_description cmdline_options;
@@ -95,10 +104,25 @@ int main(int argc, const char* argv[]) try
 
 	BOOST_LOG_TRIVIAL(info) << "start main playback loop";
 
+	std::chrono::nanoseconds lag(0ns);
+	auto time_start = clock::now();
+	bool quitApplication = false;
+
 	size_t frame = 0;
-	while(true) {
+	while(!quitApplication) {
 		std::ranges::for_each(playlist, [&](const auto& path) {
 			BOOST_LOG_TRIVIAL(info) << "show frame " << frame;
+
+			auto delta_time = clock::now() - time_start;
+	    	time_start = clock::now();
+    		lag = std::chrono::duration_cast<std::chrono::milliseconds>(delta_time);
+
+			unsigned int dlag = lag.count();
+    		if (dlag < delay) {
+				unsigned int sleepForMs = delay - dlag;
+				BOOST_LOG_TRIVIAL(debug) << "sleep for" << sleepForMs << " ms";
+				std::this_thread::sleep_for(std::chrono::milliseconds(sleepForMs));
+    		}
 
 			BOOST_LOG_TRIVIAL(debug) << "load image " << path;
 			StbTexture image(path.c_str());
@@ -114,6 +138,7 @@ int main(int argc, const char* argv[]) try
 			fb.swap();
 
 			++frame;
+
 		});
 	}
 
