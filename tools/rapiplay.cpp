@@ -22,8 +22,6 @@
 
 using namespace std::chrono_literals;
 
-constexpr std::chrono::nanoseconds timestep(16ms);
-
 namespace
 {
 
@@ -64,7 +62,7 @@ int main(int argc, const char* argv[]) try
 		("directwrite,d", boost::program_options::value<bool>(&frameBufferDirectWrite)->default_value(false), "use direct write to framebuffer")
 		("playlist,p", boost::program_options::value<std::string>(&playlistFile)->required(), "playlist file")
 		("framebuffer,f", boost::program_options::value<std::string>(&frameBufferPath)->default_value("/dev/fb0"), "framebuffer device")
-		("delay", boost::program_options::value<unsigned int>(&delay)->default_value(0), "how long to sleep beetwin frames")
+		("delay,d", boost::program_options::value<unsigned int>(&delay)->default_value(0), "how long to sleep beetwin frames")
 		("verbosity,v", boost::program_options::value<std::string>(), "verbosity");
 
 	boost::program_options::options_description cmdline_options;
@@ -104,7 +102,7 @@ int main(int argc, const char* argv[]) try
 
 	BOOST_LOG_TRIVIAL(info) << "start main playback loop";
 
-	std::chrono::nanoseconds lag(0ns);
+	std::chrono::milliseconds lag(0ms);
 	auto time_start = clock::now();
 	bool quitApplication = false;
 
