@@ -11,6 +11,7 @@ option(ENABLE_TESTING "Enable testing" TRUE)
 
 include("${CMAKE_SOURCE_DIR}/cmake/CompileOptions.cmake")
 
+find_package(Boost 1.79 REQUIRED COMPONENTS program_options log)
 find_package(StbImage REQUIRED)
 
 add_subdirectory(fb)

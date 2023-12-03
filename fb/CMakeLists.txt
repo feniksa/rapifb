@@ -22,4 +22,5 @@ set(SOURCES
 
 add_library(fb ${HEADERS} ${SOURCES})
 target_include_directories(fb PUBLIC "${CMAKE_SOURCE_DIR}" "${STB_IMAGE_INCLUDE_DIR}")
+target_link_libraries(fb PRIVATE Boost::log)
 

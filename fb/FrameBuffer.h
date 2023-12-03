@@ -15,12 +15,12 @@ public:
 	void putPixel(size_t x, size_t y, Color color);
 	void line(Point start, Point end, Color color);
 
-	void BresenhamLine(Point start, Point end, Color color);
 	void swap();
 
 	void clear(char pattern = 0);
 	int width() const noexcept { return m_fb_width; }
 	int height() const noexcept { return m_fb_height; }
+	int channels() const noexcept { return 4; }
 
 	void enableDirectWrite(bool enable);
 
@@ -30,7 +30,7 @@ private:
 	MemBlock init();
 
 	FileDescriptor m_fbDev;
-	MemBlock m_memBlock;	
+	MemBlock m_memBlock;
 	std::vector<char> m_backBuff;
 
 	int m_fb_width;
@@ -44,4 +44,4 @@ private:
 	bool m_directWrite;
 };
 
-
+void BresenhamLine(FrameBuffer* frameBuffer, const Point& start, const Point& end, const Color& color);

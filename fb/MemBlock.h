@@ -1,6 +1,8 @@
 #pragma once
 
-class MemBlock
+#include <boost/noncopyable.hpp>
+
+class MemBlock : private boost::noncopyable
 {
 public:
 	MemBlock(char* mem, int size);
@@ -12,9 +14,6 @@ public:
 	char& operator[](const int index) noexcept { return m_mem[index]; }
 
 	void clear(int pattern);
-
-	MemBlock(const MemBlock&) = delete;
-	MemBlock& operator=(const MemBlock&) = delete;
 private:
 	char* m_mem;
 	int m_size;

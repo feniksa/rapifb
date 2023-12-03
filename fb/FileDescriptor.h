@@ -1,20 +1,18 @@
 #pragma once
 
+#include <boost/core/noncopyable.hpp>
+#include <boost/noncopyable.hpp>
 
-
-class FileDescriptor final
+class FileDescriptor final : private boost::noncopyable
 {
 public:
 	FileDescriptor(const char* path);
 	~FileDescriptor();
 
-	FileDescriptor(const FileDescriptor&)            = delete;
-	FileDescriptor& operator=(const FileDescriptor&) = delete;
-
 	operator int() const noexcept { return m_resource; }
 	int resource() const noexcept { return m_resource; }
 private:
-	int m_resource;	
+	int m_resource;
 
 };
 

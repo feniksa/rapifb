@@ -4,7 +4,7 @@
 #include <string>
 #include <stdexcept>
 
-FileDescriptor::FileDescriptor(const char* path) 
+FileDescriptor::FileDescriptor(const char* path)
 {
 	m_resource = open(path, O_RDWR);
 	if (m_resource < 0) {
@@ -12,7 +12,7 @@ FileDescriptor::FileDescriptor(const char* path)
 	}
 }
 
-FileDescriptor::~FileDescriptor() 
+FileDescriptor::~FileDescriptor()
 {
 	close(m_resource);
 }

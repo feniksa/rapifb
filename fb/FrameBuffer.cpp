@@ -22,58 +22,20 @@ void FrameBuffer::putPixel(Point point, Color color)
 void FrameBuffer::putPixel(size_t x, size_t y, Color color)
 {
 	size_t offset = (x + m_xoffset) * (m_fb_bytes) + (y + m_yoffset) * m_line_length;
-
 	//size_t offset = (y * m_fb_width + x) * 4;
 
 	char* buff = buffer();
 
 	if (m_fb_bpp == 32) {
-
-	buff[offset + 0] = color.b;
-	buff[offset + 1] = color.g;
-	buff[offset + 2] = color.r;
-	buff[offset + 3] = color.a; // May not be neeeded
+		buff[offset + 0] = color.b;
+		buff[offset + 1] = color.g;
+		buff[offset + 2] = color.r;
+		buff[offset + 3] = color.a; // May not be neeeded
 
 	} else { // assume 16bpp
 		throw std::runtime_error("not supported");
 	}
 
-}
-
-void FrameBuffer::line(Point start, Point end, Color color)
-{
-	BresenhamLine(start, end, color);
-}
-
-void FrameBuffer::BresenhamLine(Point start, Point end, Color color)
-{
-	int dx = abs(end.x - start.x);
-	int dy = abs(end.y - start.y);
-
-	Point curPoint = start;
-
-	int sx = (start.x < end.x) ? 1 : -1;
-	int sy = (start.y < end.y) ? 1 : -1;
-	int err = dx - dy;
-
-	while (true) {
-	    putPixel(curPoint, color);
-
-	    if (curPoint.x == end.x && curPoint.y == end.y)
-		break;
-
-	    int err2 = 2 * err;
-
-	    if (err2 > -dy) {
-		err -= dy;
-		curPoint.x += sx;
-	    }
-
-	    if (err2 < dx) {
-		err += dx;
-		curPoint.y += sy;
-	    }
-	}
 }
 
 void FrameBuffer::swap()
@@ -141,5 +103,40 @@ MemBlock FrameBuffer::init()
 	char *fbdata = static_cast<char*>(fbdata_ptr);
 
 	return MemBlock(fbdata, fb_data_size);
+}
+
+
+void BresenhamLine(FrameBuffer* frameBuffer, const Point& start, const Point& end, const Color& color)
+{
+	assert(frameBuffer);
+
+	int dx = abs(end.x - start.x);
+	int dy = abs(end.y - start.y);
+
+	Point curPoint = start;
+
+	int sx = (start.x < end.x) ? 1 : -1;
+	int sy = (start.y < end.y) ? 1 : -1;
+	int err = dx - dy;
+
+	while (true) {
+	    frameBuffer->putPixel(curPoint, color);
+
+	    if (curPoint.x == end.x && curPoint.y == end.y)
+		break;
+
+	    int err2 = 2 * err;
+
+	    if (err2 > -dy) {
+			err -= dy;
+			curPoint.x += sx;
+	    }
+
+	    if (err2 < dx) {
+			err += dx;
+			curPoint.y += sy;
+	    }
+	}
 
 }
+
