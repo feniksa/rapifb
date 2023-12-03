@@ -29,40 +29,40 @@ int main(int argc, const char* argv[]) try
 	int outputImageChannels;
 
 	boost::program_options::options_description genericOptions("generic");
-    genericOptions.add_options()
-                        ("help", "produce help message")
-                        ("inputDir,i", boost::program_options::value<std::string>(&inputResource)->required(), "input directory for images (frames) to be resized")
-                        ("outputDir,o", boost::program_options::value<std::string>(&outputResource)->required(), "output directory for resized images")
-                        ("framebuffer,f", boost::program_options::value<std::string>(&frameBufferPath)->default_value("/dev/fb0"), "framebuffer device to get dimensions")
-                        ("width,w", boost::program_options::value<int>(), "override destination image width")
-                        ("height,h", boost::program_options::value<int>(), "override destination image height")
-                        ("channels,c", boost::program_options::value<int>(&outputImageChannels)->default_value(3), "image channels (3 or 4 channels supported)")
-                        ("verbosity,v", boost::program_options::value<std::string>(), "verbosity");
+	genericOptions.add_options()
+						("help", "produce help message")
+						("inputDir,i", boost::program_options::value<std::string>(&inputResource)->required(), "input directory for images (frames) to be resized")
+						("outputDir,o", boost::program_options::value<std::string>(&outputResource)->required(), "output directory for resized images")
+						("framebuffer,f", boost::program_options::value<std::string>(&frameBufferPath)->default_value("/dev/fb0"), "framebuffer device to get dimensions")
+						("width,w", boost::program_options::value<int>(), "override destination image width")
+						("height,h", boost::program_options::value<int>(), "override destination image height")
+						("channels,c", boost::program_options::value<int>(&outputImageChannels)->default_value(3), "image channels (3 or 4 channels supported)")
+						("verbosity,v", boost::program_options::value<std::string>(), "verbosity");
 
 	boost::program_options::options_description cmdline_options;
 	cmdline_options.add(genericOptions);
 
 	boost::program_options::variables_map vm;
-    boost::program_options::store(boost::program_options::parse_command_line(argc, argv, cmdline_options), vm);
+	boost::program_options::store(boost::program_options::parse_command_line(argc, argv, cmdline_options), vm);
 
-    if (vm.contains("help")) {
-            std::cout << cmdline_options << "\n";
-            return 0;
-    }
-    boost::program_options::notify(vm);
+	if (vm.contains("help")) {
+			std::cout << cmdline_options << "\n";
+			return 0;
+	}
+	boost::program_options::notify(vm);
 
-    // set log verbosity
-    if (vm.contains("verbosity")) {
-            std::cout << "verbosity" << std::endl;
+	// set log verbosity
+	if (vm.contains("verbosity")) {
+			std::cout << "verbosity" << std::endl;
 
-            std::string verbosity = vm["verbosity"].as<std::string>();
+			std::string verbosity = vm["verbosity"].as<std::string>();
 
-            boost::log::trivial::severity_level severityLevel;
-            boost::log::trivial::from_string(verbosity.c_str(), verbosity.size(), severityLevel);
-            boost::log::core::get()->set_filter(boost::log::trivial::severity >= severityLevel);
-    } else {
-            boost::log::core::get()->set_filter(boost::log::trivial::severity >= boost::log::trivial::info);
-    }
+			boost::log::trivial::severity_level severityLevel;
+			boost::log::trivial::from_string(verbosity.c_str(), verbosity.size(), severityLevel);
+			boost::log::core::get()->set_filter(boost::log::trivial::severity >= severityLevel);
+	} else {
+			boost::log::core::get()->set_filter(boost::log::trivial::severity >= boost::log::trivial::info);
+	}
 
 	if (!std::filesystem::is_directory(inputResource)) {
 		std::cerr << "input directory " << inputResource	<< " doesn't exist" << "\n";
@@ -84,7 +84,7 @@ int main(int argc, const char* argv[]) try
 
 	if (vm.contains("width")) {
 		outputImageWidth = vm["width"].as<int>();
-		BOOST_LOG_TRIVIAL(debug) << "override image width " <<  outputImageWidth;
+		BOOST_LOG_TRIVIAL(debug) << "override image width " <<	outputImageWidth;
 	}
 	if (vm.contains("height")) {
 		outputImageHeight = vm["height"].as<int>();

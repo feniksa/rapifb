@@ -51,37 +51,37 @@ int main(int argc, const char* argv[]) try
 	std::string frameBufferPath;
 
 	boost::program_options::options_description genericOptions("generic");
-    genericOptions.add_options()
-                        ("help,h", "produce help message")
-                        ("directwrite,d", boost::program_options::value<bool>(&frameBufferDirectWrite)->default_value(false), "use direct write to framebuffer")
-                        ("playlist,p", boost::program_options::value<std::string>(&playlistFile)->required(), "playlist file")
-                        ("framebuffer,f", boost::program_options::value<std::string>(&frameBufferPath)->default_value("/dev/fb0"), "framebuffer device")
-                        ("verbosity,v", boost::program_options::value<std::string>(), "verbosity");
+	genericOptions.add_options()
+						("help,h", "produce help message")
+						("directwrite,d", boost::program_options::value<bool>(&frameBufferDirectWrite)->default_value(false), "use direct write to framebuffer")
+						("playlist,p", boost::program_options::value<std::string>(&playlistFile)->required(), "playlist file")
+						("framebuffer,f", boost::program_options::value<std::string>(&frameBufferPath)->default_value("/dev/fb0"), "framebuffer device")
+						("verbosity,v", boost::program_options::value<std::string>(), "verbosity");
 
 	boost::program_options::options_description cmdline_options;
 	cmdline_options.add(genericOptions);
 
 	boost::program_options::variables_map vm;
-    boost::program_options::store(boost::program_options::parse_command_line(argc, argv, cmdline_options), vm);
+	boost::program_options::store(boost::program_options::parse_command_line(argc, argv, cmdline_options), vm);
 
-    if (vm.contains("help")) {
-            std::cout << cmdline_options << "\n";
-            return 0;
-    }
-    boost::program_options::notify(vm);
+	if (vm.contains("help")) {
+			std::cout << cmdline_options << "\n";
+			return 0;
+	}
+	boost::program_options::notify(vm);
 
-    // set log verbosity
-    if (vm.contains("verbosity")) {
-            std::cout << "verbosity" << std::endl;
+	// set log verbosity
+	if (vm.contains("verbosity")) {
+			std::cout << "verbosity" << std::endl;
 
-            std::string verbosity = vm["verbosity"].as<std::string>();
+			std::string verbosity = vm["verbosity"].as<std::string>();
 
-            boost::log::trivial::severity_level severityLevel;
-            boost::log::trivial::from_string(verbosity.c_str(), verbosity.size(), severityLevel);
-            boost::log::core::get()->set_filter(boost::log::trivial::severity >= severityLevel);
-    } else {
-            boost::log::core::get()->set_filter(boost::log::trivial::severity >= boost::log::trivial::info);
-    }
+			boost::log::trivial::severity_level severityLevel;
+			boost::log::trivial::from_string(verbosity.c_str(), verbosity.size(), severityLevel);
+			boost::log::core::get()->set_filter(boost::log::trivial::severity >= severityLevel);
+	} else {
+			boost::log::core::get()->set_filter(boost::log::trivial::severity >= boost::log::trivial::info);
+	}
 
 	FrameBuffer fb(frameBufferPath.c_str());
 	fb.enableDirectWrite(frameBufferDirectWrite);
