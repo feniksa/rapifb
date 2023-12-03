@@ -21,4 +21,7 @@ find_package(StbImage REQUIRED)
 add_subdirectory(fb)
 add_subdirectory(tools)
 
+set(CPACK_DEBIAN_PACKAGE_DEPENDS libboost-program-options libboost-log)
+set(CPACK_PACKAGE_CONTACT "Maksym Sditanov <feniksa@200volts.com>")
+
 include(CPack)
