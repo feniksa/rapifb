@@ -6,5 +6,7 @@
 #pragma GCC diagnostic ignored "-Wsign-compare"
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
+
 #include <stb_image_write.h>
+
 #pragma GCC diagnostic pop
