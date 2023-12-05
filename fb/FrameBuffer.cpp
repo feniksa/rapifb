@@ -38,16 +38,6 @@ void FrameBuffer::putPixel(size_t x, size_t y, Color color)
 
 }
 
-void FrameBuffer::swap()
-{
-	//assert(m_backBuff.size() == m_memBlock.size());
-
-	if (m_directWrite)
-		return;
-
-	memcpy(m_memBlock.data(), m_backBuff.data(), m_memBlock.size());
-}
-
 void FrameBuffer::clear(char pattern)
 {
 	char* buff = buffer();
@@ -73,9 +63,8 @@ const char* FrameBuffer::buffer() const
 MemBlock FrameBuffer::init()
 {
 	int result;
-	struct fb_fix_screeninfo finfo;
-	struct fb_var_screeninfo vinfo;
-
+	//struct fb_fix_screeninfo finfo;
+	//struct fb_var_screeninfo vinfo;
 
 	result = ioctl(m_fbDev, FBIOGET_FSCREENINFO, &finfo);
 	check(result);
@@ -93,6 +82,16 @@ MemBlock FrameBuffer::init()
 	m_xoffset = vinfo.xoffset;
 	m_yoffset = vinfo.yoffset;
 
+	// allocate twice of space
+	vinfo.width = vinfo.width * 2;
+	vinfo.height = vinfo.height * 2;
+
+	result = ioctl(m_fbDev, FBIOPUT_VSCREENINFO, &vinfo);
+	check(result);
+
+	result = ioctl(m_fbDev, FBIOGET_FSCREENINFO, &finfo);
+	check(result);
+
 	int fb_data_size = m_fb_width * m_fb_height * m_fb_bytes;
 
 	void* fbdata_ptr = mmap (0, fb_data_size, PROT_READ | PROT_WRITE, MAP_SHARED, m_fbDev, static_cast<off_t>(0));
@@ -104,6 +103,23 @@ MemBlock FrameBuffer::init()
 
 	return MemBlock(fbdata, fb_data_size);
 }
+
+void FrameBuffer::swap()
+{
+	//assert(m_backBuff.size() == m_memBlock.size());
+
+	if (m_directWrite)
+		return;
+
+	memcpy(m_memBlock.data(), m_backBuff.data(), m_memBlock.size());
+
+	int status;
+
+	status = ioctl(m_fbDev, FBIOPAN_DISPLAY, &vinfo);
+	check(status);
+	//finfo.line_length
+}
+
 
 
 void BresenhamLine(FrameBuffer* frameBuffer, const Point& start, const Point& end, const Color& color)

@@ -1,10 +1,15 @@
 #pragma once
 
+#include <linux/fb.h>
+
 #include "MemBlock.h"
 #include "FileDescriptor.h"
 #include "Point.h"
 #include "Color.h"
 #include <vector>
+
+//struct fb_fix_screeninfo;
+//struct fb_var_screeninfo;
 
 class FrameBuffer final
 {
@@ -37,11 +42,15 @@ private:
 	int m_fb_height;
 	int m_fb_bpp;
 	int m_fb_bytes;
+
 	long int m_line_length;
 	long int m_xoffset;
 	long int m_yoffset;
 
 	bool m_directWrite;
+
+	struct fb_fix_screeninfo finfo;
+	struct fb_var_screeninfo vinfo;
 };
 
 void BresenhamLine(FrameBuffer* frameBuffer, const Point& start, const Point& end, const Color& color);
