@@ -5,8 +5,7 @@
 #include <sys/ioctl.h>
 #include <cassert>
 #include <string.h>
-#include <thread>
-#include <chrono>
+//#include <chrono>
 
 FrameBuffer::FrameBuffer(const char* path)
 : m_fbDev(path),
@@ -44,7 +43,7 @@ void FrameBuffer::clear(char pattern)
 	memset(buff, pattern, m_memBlock.size());
 }
 
-void FrameBuffer::enableDirectWrite(bool enable)
+void FrameBuffer::enableDirectWrite(bool /*enable*/)
 {
 }
 
@@ -129,7 +128,7 @@ void FrameBuffer::swap()
 	changePan(m_currentBufferId);
 	switchToNextFramebuffer();
 
-	std::this_thread::sleep_for(std::chrono::milliseconds(20));
+	//std::this_thread::sleep_for(std::chrono::milliseconds(20));
 
 	waitForVsync();
 }
