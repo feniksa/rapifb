@@ -5,12 +5,13 @@
 #include <sys/ioctl.h>
 #include <cassert>
 #include <string.h>
+#include <thread>
+#include <chrono>
 
 FrameBuffer::FrameBuffer(const char* path)
 : m_fbDev(path),
-  m_memBlock(init()),
-  m_backBuff(m_memBlock.size()),
-  m_directWrite(false)
+  m_memBlock(init(2)),
+  m_currentBufferId(1)
 {
 }
 
@@ -19,14 +20,14 @@ void FrameBuffer::putPixel(Point point, Color color)
 	return putPixel(point.x, point.y, color);
 }
 
-void FrameBuffer::putPixel(size_t x, size_t y, Color color)
+void FrameBuffer::putPixel(int x, int y, Color color)
 {
-	size_t offset = (x + m_xoffset) * (m_fb_bytes) + (y + m_yoffset) * m_line_length;
+	int offset = (x + vinfo.xoffset) * (vinfo.bits_per_pixel / 8) + (y + vinfo.yoffset) * finfo.line_length;
 	//size_t offset = (y * m_fb_width + x) * 4;
 
 	char* buff = buffer();
 
-	if (m_fb_bpp == 32) {
+	if (vinfo.bits_per_pixel == 32) {
 		buff[offset + 0] = color.b;
 		buff[offset + 1] = color.g;
 		buff[offset + 2] = color.r;
@@ -35,7 +36,6 @@ void FrameBuffer::putPixel(size_t x, size_t y, Color color)
 	} else { // assume 16bpp
 		throw std::runtime_error("not supported");
 	}
-
 }
 
 void FrameBuffer::clear(char pattern)
@@ -46,81 +46,93 @@ void FrameBuffer::clear(char pattern)
 
 void FrameBuffer::enableDirectWrite(bool enable)
 {
-	m_directWrite = enable;
 }
 
 char* FrameBuffer::buffer()
 {
-	return (m_directWrite) ? m_memBlock.data() : m_backBuff.data();
+	return  m_memBlock.data();
 }
 
 const char* FrameBuffer::buffer() const
 {
-	return (m_directWrite) ? m_memBlock.data() : m_backBuff.data();
+	return m_memBlock.data();
 }
 
-
-MemBlock FrameBuffer::init()
+void FrameBuffer::waitForVsync()
 {
-	int result;
-	//struct fb_fix_screeninfo finfo;
-	//struct fb_var_screeninfo vinfo;
+	int status;
+	status = ioctl(m_fbDev, FBIO_WAITFORVSYNC);
+	check(status);
+}
 
-	result = ioctl(m_fbDev, FBIOGET_FSCREENINFO, &finfo);
-	check(result);
+MemBlock FrameBuffer::init(const int buffersCount)
+{
+	assert(buffersCount > 0);
+	assert(buffersCount < 100);
+
+	int result;
+
+	memset(&finfo, 0, sizeof(struct fb_fix_screeninfo));
+	memset(&vinfo, 0, sizeof(struct fb_var_screeninfo));
 
 	result = ioctl(m_fbDev, FBIOGET_VSCREENINFO, &vinfo);
 	check(result);
 
-	m_line_length = finfo.line_length;
-
-	m_fb_width = vinfo.xres;
-	m_fb_height = vinfo.yres;
-	m_fb_bpp = vinfo.bits_per_pixel;
-	m_fb_bytes = m_fb_bpp / 8;
-
-	m_xoffset = vinfo.xoffset;
-	m_yoffset = vinfo.yoffset;
-
-	// allocate twice of space
-	vinfo.width = vinfo.width * 2;
-	vinfo.height = vinfo.height * 2;
-
+	vinfo.yoffset = 0;
+	vinfo.yres_virtual = vinfo.yres * buffersCount;
 	result = ioctl(m_fbDev, FBIOPUT_VSCREENINFO, &vinfo);
 	check(result);
 
 	result = ioctl(m_fbDev, FBIOGET_FSCREENINFO, &finfo);
 	check(result);
 
-	int fb_data_size = m_fb_width * m_fb_height * m_fb_bytes;
+	//m_line_length = finfo.line_length;
 
-	void* fbdata_ptr = mmap (0, fb_data_size, PROT_READ | PROT_WRITE, MAP_SHARED, m_fbDev, static_cast<off_t>(0));
+	//m_xoffset = vinfo.xoffset;
+	//m_yoffset = vinfo.yoffset;
+
+	void* fbdata_ptr = mmap (0, finfo.smem_len, PROT_READ | PROT_WRITE, MAP_SHARED, m_fbDev, static_cast<off_t>(0));
 	if (fbdata_ptr == MAP_FAILED) {
 		throw std::runtime_error("Can't mmap framebuffer bloc");
 	}
 
-	char *fbdata = static_cast<char*>(fbdata_ptr);
+	m_buffersCount = buffersCount;
 
-	return MemBlock(fbdata, fb_data_size);
+	char *fbdata = static_cast<char*>(fbdata_ptr);
+	return MemBlock(fbdata, finfo.smem_len);
+}
+
+void FrameBuffer::changePan(int bufId)
+{
+	assert(bufId < m_buffersCount);
+	assert(bufId >= 0);
+
+	int status;
+
+	vinfo.yoffset = vinfo.yres * bufId;
+
+	status = ioctl(m_fbDev, FBIOPAN_DISPLAY, &vinfo);
+	check(status);
+
+}
+
+void FrameBuffer::switchToNextFramebuffer()
+{
+	if (m_currentBufferId < m_buffersCount)
+		++m_currentBufferId;
+	else
+		m_currentBufferId = 0;
 }
 
 void FrameBuffer::swap()
 {
-	//assert(m_backBuff.size() == m_memBlock.size());
+	changePan(m_currentBufferId);
+	switchToNextFramebuffer();
 
-	if (m_directWrite)
-		return;
+	std::this_thread::sleep_for(std::chrono::milliseconds(20));
 
-	memcpy(m_memBlock.data(), m_backBuff.data(), m_memBlock.size());
-
-	int status;
-
-	status = ioctl(m_fbDev, FBIOPAN_DISPLAY, &vinfo);
-	check(status);
-	//finfo.line_length
+	waitForVsync();
 }
-
-
 
 void BresenhamLine(FrameBuffer* frameBuffer, const Point& start, const Point& end, const Color& color)
 {
