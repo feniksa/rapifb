@@ -61,7 +61,7 @@ int main(int argc, const char* argv[]) try
 	if (sameDimensions(fb, image)) {
 		showImage(fb, image);
 	} else {
-		showImage(fb, image.resize(fb.width(), fb.height(), fb.channels()));
+		showImage(fb, image.resize(fb.width(), fb.height()));
 	}
 
 	fb.swap();
